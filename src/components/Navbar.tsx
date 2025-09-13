@@ -11,9 +11,10 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Corrected import for Sheet, SheetContent, SheetTrigger
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
 
 const Navbar = () => {
   const isMobile = useIsMobile();
@@ -70,6 +71,9 @@ const Navbar = () => {
                 Sign Out
               </Button>
             )}
+            <div className="mt-4">
+              <ThemeToggle />
+            </div>
           </nav>
         </SheetContent>
       </Sheet>
@@ -118,6 +122,9 @@ const Navbar = () => {
                 </Button>
               </NavigationMenuItem>
             )}
+            <NavigationMenuItem>
+              <ThemeToggle />
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>

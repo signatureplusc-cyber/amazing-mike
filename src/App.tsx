@@ -12,7 +12,8 @@ import AuthPage from "./pages/AuthPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Footer from "./components/Footer";
 import VideoDetailsPage from "./pages/VideoDetailsPage";
-import ProfilePage from "./pages/ProfilePage"; // Import the new ProfilePage
+import ProfilePage from "./pages/ProfilePage";
+import { ThemeProvider } from "@/components/theme-provider"; // Import ThemeProvider
 
 const queryClient = new QueryClient();
 
@@ -69,7 +70,7 @@ const AppContent = () => {
             }
           />
           <Route
-            path="/profile" // New route for user profile
+            path="/profile"
             element={
               <ProtectedRoute>
                 <ProfilePage />
@@ -92,7 +93,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AppContent />
+          <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme"> {/* ThemeProvider added here */}
+            <AppContent />
+          </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
