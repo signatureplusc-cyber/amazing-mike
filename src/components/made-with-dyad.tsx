@@ -1,10 +1,6 @@
-"use client";
-
-import React from "react";
-
-const Footer = () => {
+export const MadeWithDyad = () => {
   return (
-    <footer className="w-full p-4 text-center border-t bg-background">
+    <div className="p-4 text-center">
       <a
         href="https://www.dyad.sh/"
         target="_blank"
@@ -13,8 +9,6 @@ const Footer = () => {
       >
         Made with Dyad
       </a>
-    </footer>
+    </div>
   );
 };
-
-export default Footer;
