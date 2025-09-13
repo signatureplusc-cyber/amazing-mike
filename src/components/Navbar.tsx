@@ -13,15 +13,21 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
 
 const Navbar = () => {
   const isMobile = useIsMobile();
+  const { user, signOut } = useAuth(); // Use the auth context
 
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Generate Video", href: "/generate-video" },
     { name: "My Videos", href: "/my-videos" },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   if (isMobile) {
     return (
@@ -41,6 +47,11 @@ const Navbar = () => {
                 </Button>
               </Link>
             ))}
+            {user && (
+              <Button variant="ghost" className="w-full justify-start text-red-500" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            )}
           </nav>
         </SheetContent>
       </Sheet>
@@ -64,6 +75,13 @@ const Navbar = () => {
                 </Link>
               </NavigationMenuItem>
             ))}
+            {user && (
+              <NavigationMenuItem>
+                <Button variant="ghost" onClick={handleSignOut} className="text-red-500 hover:text-red-600">
+                  Sign Out
+                </Button>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
