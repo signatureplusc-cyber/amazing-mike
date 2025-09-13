@@ -61,7 +61,7 @@ const VideoGenerator = () => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
       <Card className="w-full max-w-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center">Generate New Video</CardTitle>
+          <CardTitle className="text-3xl font-bold text-center">Immaculate Videos</CardTitle>
           <CardDescription className="text-center text-gray-600 dark:text-gray-400">
             Enter your video idea, add a description, and select platforms to post to.
           </CardDescription>
