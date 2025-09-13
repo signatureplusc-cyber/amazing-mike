@@ -120,19 +120,21 @@ const MyVideos = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {videos.map((video) => (
                 <Card key={video.id} className="p-4 flex flex-col justify-between">
-                  <div>
-                    <CardTitle className="text-xl mb-2">{video.title}</CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-400 mb-4">
-                      {video.description || "No description provided."}
-                    </CardDescription>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {video.platforms.map((platform) => (
-                        <Badge key={platform} variant="secondary">
-                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                        </Badge>
-                      ))}
+                  <Link to={`/my-videos/${video.id}`} className="block cursor-pointer"> {/* Make card content clickable */}
+                    <div>
+                      <CardTitle className="text-xl mb-2">{video.title}</CardTitle>
+                      <CardDescription className="text-gray-600 dark:text-gray-400 mb-4">
+                        {video.description || "No description provided."}
+                      </CardDescription>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {video.platforms.map((platform) => (
+                          <Badge key={platform} variant="secondary">
+                            {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                   <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Generated: {new Date(video.created_at).toLocaleDateString()}

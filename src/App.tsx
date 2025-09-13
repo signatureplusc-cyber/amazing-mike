@@ -8,9 +8,10 @@ import NotFound from "./pages/NotFound";
 import VideoGenerator from "./pages/VideoGenerator";
 import MyVideos from "./pages/MyVideos";
 import Navbar from "./components/Navbar";
-import AuthPage from "./pages/AuthPage"; // Import the new AuthPage
+import AuthPage from "./pages/AuthPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Footer from "./components/Footer";
+import VideoDetailsPage from "./pages/VideoDetailsPage"; // Import the new VideoDetailsPage
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <MyVideos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-videos/:id" // New route for video details
+            element={
+              <ProtectedRoute>
+                <VideoDetailsPage />
               </ProtectedRoute>
             }
           />
