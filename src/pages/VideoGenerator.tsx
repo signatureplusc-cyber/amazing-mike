@@ -8,8 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase"; // Import supabase
+import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
 
 const VideoGenerator = () => {
+  const { user } = useAuth(); // Get the current user from AuthContext
   const [videoIdea, setVideoIdea] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -30,6 +33,10 @@ const VideoGenerator = () => {
   };
 
   const handleGenerateVideo = async () => {
+    if (!user) {
+      toast.error("You must be logged in to generate videos.");
+      return;
+    }
     if (!videoIdea.trim()) {
       toast.error("Please enter a video idea.");
       return;
@@ -40,21 +47,40 @@ const VideoGenerator = () => {
     }
 
     setIsGenerating(true);
-    toast.loading("Generating video and preparing for posting...");
+    const loadingToastId = toast.loading("Generating video and preparing for posting...");
 
-    // Placeholder for actual video generation and posting logic
-    // In a real app, this would involve an API call to your backend
-    await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate API call
+    try {
+      // Simulate video generation (replace with actual logic later)
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    toast.success("Video generated and ready for review!");
-    setIsGenerating(false);
-    console.log("Video Idea:", videoIdea);
-    console.log("Video Description:", videoDescription);
-    console.log("Selected Platforms:", selectedPlatforms);
-    // Reset form after generation
-    setVideoIdea("");
-    setVideoDescription("");
-    setSelectedPlatforms([]);
+      // Save video metadata to Supabase
+      const { data, error } = await supabase
+        .from("videos")
+        .insert([
+          {
+            user_id: user.id,
+            title: videoIdea,
+            description: videoDescription,
+            platforms: selectedPlatforms,
+          },
+        ])
+        .select();
+
+      if (error) throw error;
+
+      toast.success("Video generated and saved successfully!", { id: loadingToastId });
+      console.log("Video saved:", data);
+
+      // Reset form after generation
+      setVideoIdea("");
+      setVideoDescription("");
+      setSelectedPlatforms([]);
+    } catch (error: any) {
+      toast.error(`Failed to generate video: ${error.message}`, { id: loadingToastId });
+      console.error("Error generating video:", error);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (

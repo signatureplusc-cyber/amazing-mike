@@ -1,13 +1,63 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase"; // Import supabase
+import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge"; // Import Badge for platforms
+
+interface Video {
+  id: string;
+  title: string;
+  description: string;
+  platforms: string[];
+  created_at: string;
+}
 
 const MyVideos = () => {
-  // In a real application, this would fetch videos from a backend
-  const videos: any[] = []; // Placeholder for video data
+  const { user, loading: authLoading } = useAuth();
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("videos")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        toast.error(`Failed to fetch videos: ${error.message}`);
+        console.error("Error fetching videos:", error);
+        setVideos([]);
+      } else {
+        setVideos(data || []);
+      }
+      setLoading(false);
+    };
+
+    if (!authLoading) {
+      fetchVideos();
+    }
+  }, [user, authLoading]);
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg">Loading videos...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
@@ -32,12 +82,24 @@ const MyVideos = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Placeholder for actual video cards */}
               {videos.map((video) => (
-                <Card key={video.id} className="p-4">
-                  <CardTitle>{video.title}</CardTitle>
-                  <CardDescription>{video.description}</CardDescription>
-                  {/* Add more video details here */}
+                <Card key={video.id} className="p-4 flex flex-col justify-between">
+                  <div>
+                    <CardTitle className="text-xl mb-2">{video.title}</CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-400 mb-4">
+                      {video.description || "No description provided."}
+                    </CardDescription>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {video.platforms.map((platform) => (
+                        <Badge key={platform} variant="secondary">
+                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-auto">
+                    Generated: {new Date(video.created_at).toLocaleDateString()}
+                  </p>
                 </Card>
               ))}
             </div>
