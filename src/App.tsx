@@ -11,7 +11,8 @@ import Navbar from "./components/Navbar";
 import AuthPage from "./pages/AuthPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Footer from "./components/Footer";
-import VideoDetailsPage from "./pages/VideoDetailsPage"; // Import the new VideoDetailsPage
+import VideoDetailsPage from "./pages/VideoDetailsPage";
+import ProfilePage from "./pages/ProfilePage"; // Import the new ProfilePage
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,7 @@ const AppContent = () => {
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} /> {/* New auth route */}
+          <Route path="/auth" element={<AuthPage />} />
           <Route
             path="/generate-video"
             element={
@@ -60,10 +61,18 @@ const AppContent = () => {
             }
           />
           <Route
-            path="/my-videos/:id" // New route for video details
+            path="/my-videos/:id"
             element={
               <ProtectedRoute>
                 <VideoDetailsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile" // New route for user profile
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
@@ -83,7 +92,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AppContent /> {/* Render AppContent directly */}
+          <AppContent />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

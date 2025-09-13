@@ -11,13 +11,13 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetContent, SheetTrigger } => "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Corrected import for Sheet, SheetContent, SheetTrigger
 import { Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const isMobile = useIsMobile();
-  const { user, signOut, loading } = useAuth(); // Also get loading state
+  const { user, signOut, loading } = useAuth();
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -30,7 +30,6 @@ const Navbar = () => {
   };
 
   if (loading) {
-    // Optionally render a loading state for the navbar if auth is still loading
     return null;
   }
 
@@ -52,6 +51,13 @@ const Navbar = () => {
                 </Button>
               </Link>
             ))}
+            {user && (
+              <Link to="/profile">
+                <Button variant="ghost" className="w-full justify-start">
+                  Profile
+                </Button>
+              </Link>
+            )}
             {!user && (
               <Link to="/auth">
                 <Button variant="ghost" className="w-full justify-start">
@@ -87,6 +93,15 @@ const Navbar = () => {
                 </Link>
               </NavigationMenuItem>
             ))}
+            {user && (
+              <NavigationMenuItem>
+                <Link to="/profile">
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Profile
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            )}
             {!user && (
               <NavigationMenuItem>
                 <Link to="/auth">
