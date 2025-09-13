@@ -13,7 +13,8 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Footer from "./components/Footer";
 import VideoDetailsPage from "./pages/VideoDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
-import { ThemeProvider } from "@/components/theme-provider"; // Import ThemeProvider
+import { ThemeProvider } from "@/components/theme-provider";
+import EditVideoPage from "./pages/EditVideoPage"; // Import the new EditVideoPage
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,14 @@ const AppContent = () => {
             }
           />
           <Route
+            path="/my-videos/:id/edit" // New route for editing video details
+            element={
+              <ProtectedRoute>
+                <EditVideoPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/profile"
             element={
               <ProtectedRoute>
@@ -93,7 +102,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme"> {/* ThemeProvider added here */}
+          <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
             <AppContent />
           </ThemeProvider>
         </AuthProvider>

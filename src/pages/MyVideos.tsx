@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit } from "lucide-react"; // Import Edit icon
 
 interface Video {
   id: string;
@@ -120,7 +120,7 @@ const MyVideos = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {videos.map((video) => (
                 <Card key={video.id} className="p-4 flex flex-col justify-between">
-                  <Link to={`/my-videos/${video.id}`} className="block cursor-pointer"> {/* Make card content clickable */}
+                  <Link to={`/my-videos/${video.id}`} className="block cursor-pointer">
                     <div>
                       <CardTitle className="text-xl mb-2">{video.title}</CardTitle>
                       <CardDescription className="text-gray-600 dark:text-gray-400 mb-4">
@@ -139,29 +139,37 @@ const MyVideos = () => {
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Generated: {new Date(video.created_at).toLocaleDateString()}
                     </p>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="icon" disabled={deletingVideoId === video.id}>
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete video</span>
+                    <div className="flex gap-2">
+                      <Link to={`/my-videos/${video.id}/edit`}>
+                        <Button variant="outline" size="icon">
+                          <Edit className="h-4 w-4" />
+                          <span className="sr-only">Edit video</span>
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your video
-                            and remove its data from our servers.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteVideo(video.id)} className="bg-red-600 hover:bg-red-700">
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                      </Link>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="icon" disabled={deletingVideoId === video.id}>
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete video</span>
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete your video
+                              and remove its data from our servers.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteVideo(video.id)} className="bg-red-600 hover:bg-red-700">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 </Card>
               ))}

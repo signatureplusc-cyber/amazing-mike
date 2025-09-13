@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Edit } from "lucide-react"; // Import Edit icon
 
 interface Video {
   id: string;
@@ -113,10 +113,15 @@ const VideoDetailsPage = () => {
               {new Date(video.created_at).toLocaleTimeString()}
             </p>
           </div>
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center gap-4 mt-6">
             <Link to="/my-videos">
               <Button variant="outline">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to My Videos
+              </Button>
+            </Link>
+            <Link to={`/my-videos/${video.id}/edit`}>
+              <Button>
+                <Edit className="mr-2 h-4 w-4" /> Edit Video
               </Button>
             </Link>
           </div>
