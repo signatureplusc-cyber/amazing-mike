@@ -19,7 +19,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Trash2, Edit } from "lucide-react"; // Import Edit icon
+import { Trash2, Edit } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; // Import Select components
 
 interface Video {
   id: string;
@@ -32,8 +39,18 @@ interface Video {
 const MyVideos = () => {
   const { user, loading: authLoading } = useAuth();
   const [videos, setVideos] = useState<Video[]>([]);
+  const [filteredVideos, setFilteredVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
+  const [selectedFilterPlatform, setSelectedFilterPlatform] = useState<string>("all");
+
+  const socialMediaPlatforms = [
+    { id: "youtube", name: "YouTube" },
+    { id: "tiktok", name: "TikTok" },
+    { id: "instagram", name: "Instagram" },
+    { id: "facebook", name: "Facebook" },
+    { id: "twitter", name: "X (formerly Twitter)" },
+  ];
 
   const fetchVideos = async () => {
     if (!user) {
@@ -64,6 +81,16 @@ const MyVideos = () => {
     }
   }, [user, authLoading]);
 
+  useEffect(() => {
+    if (selectedFilterPlatform === "all") {
+      setFilteredVideos(videos);
+    } else {
+      setFilteredVideos(
+        videos.filter((video) => video.platforms.includes(selectedFilterPlatform))
+      );
+    }
+  }, [videos, selectedFilterPlatform]);
+
   const handleDeleteVideo = async (videoId: string) => {
     setDeletingVideoId(videoId);
     const loadingToastId = toast.loading("Deleting video...");
@@ -73,7 +100,7 @@ const MyVideos = () => {
         .from("videos")
         .delete()
         .eq("id", videoId)
-        .eq("user_id", user?.id); // Ensure only the owner can delete
+        .eq("user_id", user?.id);
 
       if (error) throw error;
 
@@ -105,10 +132,28 @@ const MyVideos = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {videos.length === 0 ? (
+          <div className="flex justify-end mb-4">
+            <Select value={selectedFilterPlatform} onValueChange={setSelectedFilterPlatform}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by platform" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Platforms</SelectItem>
+                {socialMediaPlatforms.map((platform) => (
+                  <SelectItem key={platform.id} value={platform.id}>
+                    {platform.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {filteredVideos.length === 0 ? (
             <div className="text-center p-8">
               <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                You haven't generated any videos yet.
+                {selectedFilterPlatform === "all"
+                  ? "You haven't generated any videos yet."
+                  : `No videos found for "${socialMediaPlatforms.find(p => p.id === selectedFilterPlatform)?.name}".`}
               </p>
               <Link to="/generate-video">
                 <Button size="lg">
@@ -118,7 +163,7 @@ const MyVideos = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {videos.map((video) => (
+              {filteredVideos.map((video) => (
                 <Card key={video.id} className="p-4 flex flex-col justify-between">
                   <Link to={`/my-videos/${video.id}`} className="block cursor-pointer">
                     <div>
