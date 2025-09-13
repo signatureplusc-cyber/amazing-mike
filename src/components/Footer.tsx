@@ -1,6 +1,10 @@
-export const MadeWithDyad = () => {
+"use client";
+
+import React from "react";
+
+const Footer = () => {
   return (
-    <div className="p-4 text-center">
+    <footer className="w-full p-4 text-center border-t bg-background">
       <a
         href="https://www.dyad.sh/"
         target="_blank"
@@ -9,6 +13,8 @@ export const MadeWithDyad = () => {
       >
         Made with Dyad
       </a>
-    </div>
+    </footer>
   );
 };
+
+export default Footer;

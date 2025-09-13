@@ -8,9 +8,9 @@ import NotFound from "./pages/NotFound";
 import VideoGenerator from "./pages/VideoGenerator";
 import MyVideos from "./pages/MyVideos";
 import Navbar from "./components/Navbar";
-import AuthForm from "./components/AuthForm"; // Import AuthForm
-import { AuthProvider, useAuth } from "./contexts/AuthContext"; // Import AuthProvider and useAuth
-import { MadeWithDyad } from "./components/made-with-dyad"; // Import MadeWithDyad
+import AuthForm from "./components/AuthForm";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import Footer from "./components/Footer"; // Import the new Footer component
 
 const queryClient = new QueryClient();
 
@@ -26,28 +26,26 @@ const AppContent = () => {
   }
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen"> {/* Use min-h-screen for overall app height */}
       <Navbar />
-      <div className="flex flex-col min-h-[calc(100vh-4rem)]"> {/* Adjust height to account for Navbar */}
-        <div className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            {user ? (
-              <>
-                <Route path="/generate-video" element={<VideoGenerator />} />
-                <Route path="/my-videos" element={<MyVideos />} />
-              </>
-            ) : (
-              // Redirect to home or show a message if not authenticated
-              <Route path="/generate-video" element={<Index />} />
-            )}
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
-        <MadeWithDyad /> {/* Render MadeWithDyad at the bottom */}
+      <div className="flex-grow"> {/* This div will take up available space */}
+        <Routes>
+          <Route path="/" element={<Index />} />
+          {user ? (
+            <>
+              <Route path="/generate-video" element={<VideoGenerator />} />
+              <Route path="/my-videos" element={<MyVideos />} />
+            </>
+          ) : (
+            // Redirect to home or show a message if not authenticated
+            <Route path="/generate-video" element={<Index />} />
+          )}
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </div>
-    </>
+      <Footer /> {/* Render the Footer at the bottom */}
+    </div>
   );
 };
 
