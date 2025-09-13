@@ -4,10 +4,22 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase"; // Import supabase
-import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge"; // Import Badge for platforms
+import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 
 interface Video {
   id: string;
@@ -21,35 +33,59 @@ const MyVideos = () => {
   const { user, loading: authLoading } = useAuth();
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
+
+  const fetchVideos = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("videos")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error(`Failed to fetch videos: ${error.message}`);
+      console.error("Error fetching videos:", error);
+      setVideos([]);
+    } else {
+      setVideos(data || []);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchVideos = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("videos")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        toast.error(`Failed to fetch videos: ${error.message}`);
-        console.error("Error fetching videos:", error);
-        setVideos([]);
-      } else {
-        setVideos(data || []);
-      }
-      setLoading(false);
-    };
-
     if (!authLoading) {
       fetchVideos();
     }
   }, [user, authLoading]);
+
+  const handleDeleteVideo = async (videoId: string) => {
+    setDeletingVideoId(videoId);
+    const loadingToastId = toast.loading("Deleting video...");
+
+    try {
+      const { error } = await supabase
+        .from("videos")
+        .delete()
+        .eq("id", videoId)
+        .eq("user_id", user?.id); // Ensure only the owner can delete
+
+      if (error) throw error;
+
+      setVideos((prevVideos) => prevVideos.filter((video) => video.id !== videoId));
+      toast.success("Video deleted successfully!", { id: loadingToastId });
+    } catch (error: any) {
+      toast.error(`Failed to delete video: ${error.message}`, { id: loadingToastId });
+      console.error("Error deleting video:", error);
+    } finally {
+      setDeletingVideoId(null);
+    }
+  };
 
   if (authLoading || loading) {
     return (
@@ -97,9 +133,34 @@ const MyVideos = () => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-auto">
-                    Generated: {new Date(video.created_at).toLocaleDateString()}
-                  </p>
+                  <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Generated: {new Date(video.created_at).toLocaleDateString()}
+                    </p>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="icon" disabled={deletingVideoId === video.id}>
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete video</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your video
+                            and remove its data from our servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteVideo(video.id)} className="bg-red-600 hover:bg-red-700">
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </Card>
               ))}
             </div>
