@@ -1,12 +1,12 @@
 "use client";
 
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
+import { useAuth } from "@/contexts/AuthContext";
+import Footer from "@/components/Footer"; // Import Footer to ensure it's used correctly if MadeWithDyad was there
 
 const Index = () => {
-  const { user } = useAuth(); // Get the current user from AuthContext
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
@@ -26,11 +26,13 @@ const Index = () => {
           </div>
         ) : (
           <p className="text-lg text-gray-700 dark:text-gray-300">
-            Sign in or sign up to start generating videos!
+            <Link to="/auth">
+              <Button size="lg">Sign in or Sign up</Button>
+            </Link> to start generating videos!
           </p>
         )}
       </div>
-      <MadeWithDyad />
+      {/* Footer is now handled by App.tsx, so MadeWithDyad is removed from here */}
     </div>
   );
 };
